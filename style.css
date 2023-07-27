@@ -53,9 +53,10 @@ main
 
 .message
 {
-  transform: translate(-350px, -140px);
+  transform: translate(-420px, -140px);
 
   position: absolute;
+  text-align: center;
 
   width: 400px;
 }

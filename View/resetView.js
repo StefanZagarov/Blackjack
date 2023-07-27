@@ -1,3 +1,6 @@
-resetBtn = document.querySelector(`.reset`);
+_resetBtn = document.querySelector(`.reset`);
 
-
+export const addHandlerResetBtn = function (handler)
+{
+    _resetBtn.addEventListener(`click`, handler);
+};

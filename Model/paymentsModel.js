@@ -15,7 +15,7 @@ export const playerNaturalPayment = function (player, dealer, betAmmount)
 
 export const giveMoney = function (receiver, giver, betAmmount)
 {
-    if (receiver.type === `player`)
+    if (receiver.role === `player`)
     {
         receiver.money += betAmmount * 2;
         giver.money -= betAmmount;
@@ -24,6 +24,4 @@ export const giveMoney = function (receiver, giver, betAmmount)
     {
         receiver.money += betAmmount;
     }
-
-    console.log(`Give money to ${receiver}, from ${giver}. ${betAmmount}`);
 };

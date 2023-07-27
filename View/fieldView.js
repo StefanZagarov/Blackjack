@@ -12,9 +12,14 @@ export const updateMoney = function (role)
     role.moneyElement.textContent = role.money;
 };
 
-export const updateBetAmmount = function (role, betAmmount)
+export const updateBetAmmount = function (player, betAmmount)
 {
-    role.betElement.textContent = betAmmount;
+    player.betElement.textContent = betAmmount;
+};
+
+export const clearBetAmmount = function (player)
+{
+    player.betElement.textContent = 0;
 };
 
 export const updateHandValue = function (role)

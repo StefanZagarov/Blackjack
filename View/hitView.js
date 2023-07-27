@@ -1,5 +1,10 @@
 const _hitBtn = document.getElementById(`hit`);
 
+export const addHandlerHitView = function (handler)
+{
+    _hitBtn.addEventListener(`click`, handler);
+};
+
 export const displayHitBtn = function ()
 {
     _hitBtn.style.visibility = `visible`;
