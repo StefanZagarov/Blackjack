@@ -72,13 +72,13 @@ const controlStandBtn = function ()
     if (dealer.handValue > 21 || player.handValue >= dealer.handValue)
     {
         messageView.showMessage(`You won!`);
-        console.log(betAmmount);
+
         controlGiveMoney(player, dealer, betAmmount);
     }
     else
     {
         messageView.showMessage(`You lost!`);
-        console.log(betAmmount);
+
         controlGiveMoney(dealer, player, betAmmount);
     }
 
