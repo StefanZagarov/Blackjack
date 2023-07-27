@@ -117,6 +117,8 @@ const controlShowBetBtn = function ()
 
     standView.hideStandBtn();
     hitView.hideHitBtn();
+
+    controlCheckForGameOver();
 };
 
 const controlResetBtn = function ()
@@ -281,8 +283,6 @@ const controlGiveMoney = function (receiver, giver, betAmmount)
     paymentsModel.giveMoney(receiver, giver, betAmmount);
 
     controlUpdateMoney();
-
-    controlCheckForGameOver();
 };
 
 const controlPlayerNaturalPayment = function (player, dealer, betAmmount)
@@ -290,8 +290,6 @@ const controlPlayerNaturalPayment = function (player, dealer, betAmmount)
     paymentsModel.playerNaturalPayment(player, dealer, betAmmount);
 
     controlUpdateMoney();
-
-    controlCheckForGameOver();
 };
 
 const controlBothNaturalPayment = function (player, betAmmount)
@@ -324,7 +322,7 @@ const controlCheckForGameOver = function ()
     }
     if (player.money <= 0)
     {
-        messageView.showMessage(`You Died (jk you are just poor now)`);
+        messageView.showMessage(`You Died (kidding, you are just poor now)`);
 
         betView.hideBetBtn();
     }
