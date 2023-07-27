@@ -2,6 +2,7 @@ class Deck
 {
     #cards = [`A`, 2, 3, 4, 5, 6, 7, 8, 9, 10, `J`, `Q`, `K`];
     #deck = [];
+    // Testing purposes
     // #deck = [`A`, 7, `Q`, 5];
     // #deck = [7, `A`, 5, `Q`,];
 
@@ -46,6 +47,11 @@ class Deck
     drawCard()
     {
         return this.#deck.pop();
+    }
+
+    getRemainingCards()
+    {
+        this.#deck.length;
     }
 }
 

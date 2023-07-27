@@ -1,23 +1,17 @@
-export default function (standBtn, hitBnt, betBtn, betField, playerBetElement, dealerCardsElement, deck, dealer, player, messageElement)
+const _standBtn = document.getElementById(`stand`);
+
+export const addHandlerStandBtn = function (handler)
 {
-    displayBetButton(standBtn, hitBnt, betBtn, betField, playerBetElement);
+    _standBtn.addEventListener(`click`, handler);
+};
 
-    dealer.revealSecondCard(dealerCardsElement, this);
+// Try to make a hidden class and toggle it
+export const displayStandBtn = function ()
+{
+    _standBtn.style.visibility = `visible`;
+};
 
-    while (dealer.handValue < 17)
-    {
-        dealer.draw(deck, this, dealerCardsElement, dealer.valueElement);
-        this.tryReduceAceValue(dealer);
-    }
-
-    if (dealer.handValue > 21 || player.handValue >= dealer.handValue)
-    {
-        editText(messageElement, `You won!`);
-        this.giveMoney(player, dealer);
-    }
-    else
-    {
-        editText(messageElement, `You lost!`);
-        this.giveMoney(dealer, player);
-    }
+export const hideStandBtn = function ()
+{
+    _standBtn.style.visibility = `hidden`;
 };

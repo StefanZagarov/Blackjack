@@ -1,14 +1,11 @@
-export default function (deck, playerCardsElement, player, dealer, standBtn, hitBnt, betBtn, betField, playerBetElement, messageElement)
+const _hitBtn = document.getElementById(`hit`);
+
+export const displayHitBtn = function ()
 {
-    player.draw(deck, this, playerCardsElement, player.valueElement);
+    _hitBtn.style.visibility = `visible`;
+};
 
-    this.tryReduceAceValue(player);
-
-    if (player.handValue > 21)
-    {
-        editText(messageElement, `Bust!`);
-
-        this.giveMoney(dealer, player);
-        displayBetButton(standBtn, hitBnt, betBtn, betField, playerBetElement);
-    }
+export const hideHitBtn = function ()
+{
+    _hitBtn.style.visibility = `hidden`;
 };

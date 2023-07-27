@@ -1,32 +1,297 @@
-import { player } from '../Model/player.js';
-import dealer from '../Model/dealer.js';
-import deck from '../Model/deckBuilder.js';
-import betView from '../View/betView.js';
+//v0.7.5
+console.log(`Get off the back stage ಠ_ಠ`);
 
-const displayGameButtons = function ()
+import { player } from '../Model/Classes/player.js';
+import dealer from '../Model/Classes/dealer.js';
+import deck from '../Model/Classes/deckBuilder.js';
+
+import * as messageView from '../View/messageView.js';
+import * as betView from '../View/betView.js';
+import * as standView from '../View/standView.js';
+import * as hitView from '../View/hitView.js';
+import * as betModel from '../Model/betModel.js';
+import * as fieldView from '../View/fieldView.js';
+import { hasNatural } from '../Model/naturalsModel.js';
+import * as paymentsModel from '../Model/paymentsModel.js';
+import { tryReduceAceValue } from '../Model/tryReduceAceValueModel.js';
+
+// All "player" or "participant" names referring to both roles should be changed to "role"
+
+// Try to make a toggle between bet and field; stand and hit
+let betAmmount;
+
+const controlDisplayStandAndHitBtns = function ()
 {
-    standBtn.style.visibility = `visible`;
-    hitBnt.style.visibility = `visible`;
+    standView.displayStandBtn();
+    hitView.displayHitBtn();
 
-    betBtn.style.visibility = `hidden`;
-    betField.style.visibility = `hidden`;
+    betView.hideBetBtn();
+};
+
+const controlShowBetBtn = function ()
+{
+    betView.showBetBtn();
+
+    standView.hideStandBtn();
+    hitView.hideHitBtn();
 };
 
 const controlBetBtn = function ()
 {
-    betView.getFieldValue();
+    betAmmount = betView.getFieldValue();
 
-    // Replace this with creating the deck only when there are no cards left
+    const isValidValue = betModel.isValidValue(player, dealer, betAmmount);
+    if (isValidValue !== ``)
+    {
+        messageView.showMessage(isValidValue);
+        return;
+    }
+    // Clear message if there was any
+    messageView.clearMessage();
+
+    player.money -= betAmmount;
+
+    fieldView.updateMoney(player);
+    fieldView.updateBetAmmount(player, betAmmount);
+
+    // Replace this with creating the deck only when there are no cards left, just keep in mind that there are some cards still in play
+    // if (deck.getRemainingCards < 12(for example)) deck.createDeck();
     deck.createDeck();
 
-    console.log(deck);
+    controlDisplayStandAndHitBtns();
+
+    initialDraw();
+};
+
+const controlTryReduceAceValue = function (participant)
+{
+    tryReduceAceValue(participant);
+    messageView.showMessage(participant.valueElement, participant.handValue);
+};
+
+const controlStandBtn = function ()
+{
+    controlRevealDealerSecondCard();
+
+    while (dealer.handValue < 17)
+    {
+        controlDealerDraw();
+        controlTryReduceAceValue(dealer);
+    }
+
+    if (dealer.handValue > 21 || player.handValue >= dealer.handValue)
+    {
+        messageView.showMessage(`You won!`);
+        controlGiveMoney(player, dealer, betAmmount);
+    }
+    else
+    {
+        messageView.showMessage(`You lost!`);
+        controlGiveMoney(dealer, player, betAmmount);
+    }
+};
+
+// Try to put draws in Model
+const controlPlayerDraw = function ()
+{
+    const drawnCard = player.draw(deck);
+    const cardValue = player.getCardValue(drawnCard);
+
+    player.handValue += cardValue;
+    fieldView.updateHandValue(player);
+    fieldView.displayCard(player, drawnCard);
+};
+
+const controlDealerDraw = function ()
+{
+    // Logic to hide the dealer's second card
+    if (dealer.hand[0] && dealer.hand[1] === undefined)
+    {
+        const drawnCard = dealer.draw(deck);
+        const cardValue = dealer.getCardValue(drawnCard);
+
+        dealer.secondCard = drawnCard;
+        dealer.secondCardValue = cardValue;
+        fieldView.displayCard(dealer, `?`);
+    }
+    else
+    {
+        const drawnCard = dealer.draw(deck);
+        const cardValue = dealer.getCardValue(drawnCard);
+
+        dealer.handValue += cardValue;
+        fieldView.updateHandValue(dealer);
+        fieldView.displayCard(dealer, drawnCard);
+    }
+    console.log(dealer.hand);
+};
+
+const controlRevealDealerSecondCard = function ()
+{
+    dealer.cardsElement.removeChild(dealer.cardsElement.lastChild);
+    fieldView.displayCard(dealer, dealer.secondCard);
+    dealer.handValue += dealer.secondCardValue;
+    fieldView.updateHandValue(dealer);
+    controlTryReduceAceValue(dealer);
+};
+
+const initialDraw = function ()
+{
+    // Useless untill i rewrite it to not create a new deck for each round
+    if (deck.length < 12)
+    {
+        deck.createDeck();
+    }
+
+    controlPlayerDraw();
+    controlDealerDraw();
+
+    controlPlayerDraw();
+    controlDealerDraw();
+
+
+    const playerHasNatural = hasNatural(player);
+    const dealerHasNatural = hasNatural(dealer);
+
+    if (playerHasNatural && dealerHasNatural)
+    {
+        messageView.showMessage(`Stand - off!`);
+        controlRevealDealerSecondCard();
+        paymentsModel.bothNaturalPayment(betAmmount);
+
+        controlShowBetBtn();
+        return;
+    }
+
+    if (dealerHasNatural)
+    {
+        messageView.showMessage(`Dealer Blackjack!`);
+        controlRevealDealerSecondCard();
+        controlGiveMoney(dealer, player, betAmmount);
+
+        controlShowBetBtn();
+        return;
+    }
+
+    if (playerHasNatural)
+    {
+        messageView.showMessage(`Blackjack!`);
+        controlRevealDealerSecondCard();
+        paymentsModel.playerNaturalPayment(player, dealer, betAmmount);
+
+        controlShowBetBtn();
+        return;
+    }
+
+    if (player.hand[0] === `A` && player.hand[1] === `A`)
+    {
+        player.aceCount--;
+        player.handValue -= 10;
+
+        fieldView.updateHandValue(player);
+    }
+};
+
+const controlCheckForGameOver = function ()
+{
+    if (dealer.money === 0.5)
+    {
+        messageView.showMessage(`Dealer forfeits so he can use his last money to go home to his family! You Win!`);
+
+        betView.hideBetBtn();
+    }
+    if (dealer.money <= 0)
+    {
+        messageView.showMessage(`Congratulations! You made the dealer homeless!`);
+
+        betView.hideBetBtn();
+    }
+    if (player.money <= 0)
+    {
+        messageView.showMessage(`You Died (jk you are just poor now)`);
+
+        betView.hideBetBtn();
+    }
+};
+
+const controlClearField = function ()
+{
+    player.hand = [];
+    dealer.hand = [];
+
+    player.handValue = 0;
+    dealer.handValue = 0;
+
+    player.aceCount = 0;
+    dealer.aceCount = 0;
+
+    while (player.cardsElement.firstChild)
+    {
+        player.cardsElement.removeChild(player.cardsElement.lastChild);
+    }
+    while (dealer.cardsElement.firstChild)
+    {
+        dealer.cardsElement.removeChild(dealer.cardsElement.lastChild);
+    }
+    // Alternative way to clear - might not be suitable for high-performance applications because it invokes the browser's HTML parser (though browsers may optimize for the case where the value is an empty string):
+    // playerCardsElement.innerHTML = ``;
+    // dealerCardsElement.innerHTML = ``;
+
+    //Clear message field also
+};
+
+const controlGiveMoney = function (receiver, giver, betAmmount)
+{
+    paymentsModel.giveMoney(receiver, giver, betAmmount);
+
+    fieldView.updateMoney(player);
+    fieldView.updateMoney(dealer);
+
+    controlCheckForGameOver();
+};
+
+const controlPlayerNaturalPayment = function (player, dealer)
+{
+    paymentsModel.playerNaturalPayment(player, dealer);
+
+    fieldView.updateMoney(player);
+    fieldView.updateMoney(dealer);
+
+    controlCheckForGameOver();
+};
+
+const controlBothNaturalPayment = function ()
+{
+    paymentsModel.bothNaturalPayment();
+
+    fieldView.updateMoney(player);
+};
+
+const resetGame = function ()
+{
+    clearField(player, dealer, playerCardsElement, dealerCardsElement, messageElement);
+
+    editText(player.valueElement, `0`);
+    betField.value = ``;
+
+    player.money = startingCurrencyForPlayer;
+    dealer.money = startingCurrencyForDealer;
+
+    editText(player.moneyElement, player.money);
+    editText(dealer.moneyElement, dealer.money);
+
+    deck.createDeck();
+
+    displayBetButton(standBtn, hitBnt, betBtn, betField, playerBetElement);
+    showBetButton(betBtn, betField);
 };
 
 const init = function ()
 {
-    betView.addHandlerDisplayBetBtn(controlBetBtn);
-    console.log(player);
-    console.log(dealer);
+    fieldView.updateMoney(player);
+    fieldView.updateMoney(dealer);
+    betView.addHandlerBetBtn(controlBetBtn);
+    standView.addHandlerStandBtn(controlStandBtn);
 };
 init();
 
@@ -34,161 +299,9 @@ init();
 
 
 
-const initialDraw = function ()
-{
-    // Useless untill i rewrite it to not create a new deck for each round
-    if (this.deck.length < 12)
-    {
-        this.deck.createDeck();
-    }
-
-    this.player.draw(this.deck, this, this.playerCardsElement, this.player.valueElement);
-    this.dealer.draw(this.deck, this, this.dealerCardsElement, this.dealer.valueElement);
-
-    this.player.draw(this.deck, this, this.playerCardsElement, this.player.valueElement);
-    this.dealer.draw(this.deck, this, this.dealerCardsElement, this.dealer.valueElement);
-
-
-    const playerHasNatural = this.checkForNatural(this.player);
-    const dealerHasNatural = this.checkForNatural(this.dealer);
-
-    if (playerHasNatural && dealerHasNatural)
-    {
-        editText(this.messageElement, `Stand - off!`);
-        this.bothNaturalPayment();
-        displayBetButton(this.standBtn, this.hitBnt, this.betBtn, this.betField, this.playerBetElement);
-        this.dealer.revealSecondCard(this.dealerCardsElement, this);
-        return;
-    }
-
-    if (dealerHasNatural)
-    {
-        editText(this.messageElement, `Dealer Blackjack!`);
-        displayBetButton(this.standBtn, this.hitBnt, this.betBtn, this.betField, this.playerBetElement);
-        this.dealer.revealSecondCard(this.dealerCardsElement, this);
-        this.giveMoney(this.dealer, this.player);
-        return;
-    }
-
-    if (playerHasNatural)
-    {
-        editText(this.messageElement, `Blackjack!`);
-        displayBetButton(this.standBtn, this.hitBnt, this.betBtn, this.betField, this.playerBetElement);
-        this.dealer.revealSecondCard(this.dealerCardsElement, this);
-        this.playerNaturalPayment();
-        return;
-    }
-
-    if (this.player.hand[0] === `A` && this.player.hand[1] === `A`)
-    {
-        this.player.aceCount--;
-        this.player.handValue -= 10;
-
-        editText(this.player.valueElement, this.player.handValue);
-    }
-};
-
-const giveMoney = function (receiver, giver)
-{
-    if (receiver.type === `player`)
-    {
-        receiver.money += this.betAmmount * 2;
-        giver.money -= this.betAmmount;
-    }
-    else
-    {
-        receiver.money += this.betAmmount;
-    }
-
-    editText(receiver.moneyElement, receiver.money);
-    editText(giver.moneyElement, giver.money);
-
-    this.resetAceCounters();
-    this.checkForGameOver();
-};
-
-const constplayerNaturalPayment = function ()
-{
-    this.player.money += this.betAmmount * 2.5;
-    this.dealer.money -= this.betAmmount * 1.5;
-
-    editText(this.player.moneyElement, this.player.money);
-    editText(this.dealer.moneyElement, this.dealer.money);
-
-    this.resetAceCounters();
-    this.checkForGameOver();
-};
-
-const bothNaturalPayment = function ()
-{
-    this.player.money += this.betAmmount;
-
-    editText(this.player.moneyElement, this.player.money);
-
-    this.resetAceCounters();
-};
-
-const checkValue = function (cardValue)
-{
-    if (cardValue === `A`)
-    {
-        cardValue = 11;
-    }
-    else if (cardValue === `J` || cardValue === `Q` || cardValue === `K`)
-    {
-        cardValue = 10;
-    }
-
-    return cardValue;
-};
-
-const checkForGameOver = function ()
-{
-    if (this.dealer.money === 0.5)
-    {
-        editText(this.messageElement, `Dealer forfeits so he can use his last money to go home to his family! You Win!`);
-
-        hideBetButton(this.betBtn, this.betField);
-    }
-    if (this.dealer.money <= 0)
-    {
-        editText(this.messageElement, `Congratulations! You made the dealer homeless!`);
-
-        hideBetButton(this.betBtn, this.betField);
-    }
-    if (this.player.money <= 0)
-    {
-        editText(this.messageElement, `You Died (jk you just poor now)`);
-
-        hideBetButton(this.betBtn, this.betField);
-    }
-};
-
-const tryReduceAceValue = function (participant)
-{
-    if (participant.handValue > 21 && participant.aceCount > 0)
-    {
-        participant.handValue -= 10;
-        participant.aceCount--;
-        editText(participant.valueElement, participant.handValue);
-    }
-};
-
-const checkForNatural = function (participant)
-{
-    if (participant.hand.find(element => element === `A`))
-    {
-        if (participant.hand.find(element => element === `K`) || participant.hand.find(element => element === `Q`) ||
-            participant.hand.find(element => element === `J`) || participant.hand.find(element => element === 10))
-        {
-            return true;
-        }
-    }
-    return false;
-};
-
-const resetAceCounters = function ()
-{
-    this.player.aceCount = 0;
-    this.dealer.aceCount = 0;
-};
+// TODO:
+// 0. Refactor for MVC architecture
+// 1. Implement the missing rules
+// 2. Add an explanation about the game and the rules of the hands
+// 3. Rewrite to not create a new deck each round
+// 4. Save progress on browser exit
