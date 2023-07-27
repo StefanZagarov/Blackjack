@@ -1,4 +1,4 @@
-//v0.7.5
+//v0.7
 console.log(`Get off the back stage ಠ_ಠ`);
 
 import { player } from '../Model/Classes/player.js';
@@ -23,7 +23,10 @@ let betAmmount;
 const controlBetBtn = function ()
 {
     // Replace this with creating the deck only when there are no cards left, just keep in mind that there are some cards still in play
-    deck.createDeck();
+    if (deck.checkForSplit())
+    {
+        deck.shufflePlayedCards(player, dealer);
+    }
 
     controlClearField();
 
@@ -53,7 +56,7 @@ const controlBetBtn = function ()
     fieldView.updateMoney(player);
     fieldView.updateBetAmmount(player, betAmmount);
 
-    controlDisplayStandAndHitBtns();
+    controlShowStandAndHitBtns();
 
     initialDraw();
 };
@@ -100,8 +103,22 @@ const controlHitBtn = function ()
     }
 };
 
+const controlResetBtn = function ()
+{
+    controlClearField();
 
-const controlDisplayStandAndHitBtns = function ()
+    player.money = startingCurrencyForPlayer;
+    dealer.money = startingCurrencyForDealer;
+
+    controlUpdateMoney();
+
+    deck.createDeck();
+
+    controlShowBetBtn();
+};
+
+
+const controlShowStandAndHitBtns = function ()
 {
     standView.displayStandBtn();
     hitView.displayHitBtn();
@@ -121,26 +138,14 @@ const controlShowBetBtn = function ()
     controlCheckForGameOver();
 };
 
-const controlResetBtn = function ()
-{
-    controlClearField();
-
-    player.money = startingCurrencyForPlayer;
-    dealer.money = startingCurrencyForDealer;
-
-    controlUpdateMoney();
-
-    deck.createDeck();
-
-    controlShowBetBtn();
-};
 
 const controlPlayerDraw = function ()
 {
+    console.log(`Remaining deck:`, deck);
     // Useless untill i rewrite it to not create a new deck for each round
-    if (deck.length < 12)
+    if (deck.checkForSplit())
     {
-        deck.shuffle();
+        deck.shufflePlayedCards(player, dealer);
     }
 
     const drawnCard = player.draw(deck);
@@ -155,10 +160,11 @@ const controlPlayerDraw = function ()
 
 const controlDealerDraw = function ()
 {
+    console.log(`Remaining deck:`, deck);
     // Useless untill i rewrite it to not create a new deck for each round
-    if (deck.length < 12)
+    if (deck.checkForSplit())
     {
-        deck.shuffle();
+        deck.shufflePlayedCards(player, dealer);
     }
 
     // Logic to hide the dealer's second card
@@ -167,7 +173,6 @@ const controlDealerDraw = function ()
         const drawnCard = dealer.draw(deck);
         const cardValue = dealer.getCardValue(drawnCard);
 
-        dealer.secondCard = drawnCard;
         dealer.secondCardValue = cardValue;
         fieldView.displayCard(dealer, `?`);
     }
@@ -188,7 +193,7 @@ const controlRevealDealerSecondCard = function ()
 {
     dealer.cardsElement.removeChild(dealer.cardsElement.lastChild);
 
-    fieldView.displayCard(dealer, dealer.secondCard);
+    fieldView.displayCard(dealer, dealer.hand[1]);
     dealer.handValue += dealer.secondCardValue;
     controlTryReduceAceValue(dealer);
     fieldView.updateHandValue(dealer);
@@ -304,8 +309,6 @@ const controlTryReduceAceValue = function (participant)
     tryReduceAceValue(participant);
 };
 
-
-
 const controlCheckForGameOver = function ()
 {
     if (dealer.money === 0.5)
@@ -346,12 +349,8 @@ init();
 
 
 
-
-
 // TODO:
-// 0. Refactor for MVC architecture
+// 0. Refactor for MVC architecture - done, though im sure it's not ideal. Read the code, look for optimisations
 // 1. Implement the missing rules
 // 2. Add an explanation about the game and the rules of the hands
-// 3. Rewrite to not create a new deck each round
-// 4. Save progress on browser exit
-// 5. The deck shouldn't be reshuffled after each game, instead keep track of the remaining cards on each draw and reshuffle only the cards not in play back to the deck - new method: shuffle(), create a new deck and remove the cards from the deck that are in play
+// 3. Save progress on browser exit

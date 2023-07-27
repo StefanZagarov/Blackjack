@@ -7,7 +7,7 @@ class Dealer extends Participant
     cardsElement = document.querySelector(`.dealerCards`);
     valueElement = document.getElementById(`dealerValue`);
     role = `dealer`;
-    secondCard;
+
     secondCardValue;
 
     constructor(startingMoney)

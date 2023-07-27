@@ -6,11 +6,7 @@ class Deck
     // #deck = [`A`, 7, `Q`, 5];
     // #deck = [7, `A`, 5, `Q`,];
     // #deck = [`A`, `A`, `Q`, `Q`,];
-
-    constructor()
-    {
-        this.createDeck();
-    }
+    // #deck = [`A`, 2, 3, 4, 5, 6, 7, 8, 9, 10, `J`, `Q`, `K`, 2, 3, 4, 5, 6];
 
     #createCards()
     {
@@ -22,10 +18,18 @@ class Deck
                 this.#deck.push(this.#cards[card]);
             }
         }
+
+        this.#deck.push(`split`);
+    }
+
+    constructor()
+    {
+        this.createDeck();
     }
 
     #shuffleDeck()
     {
+        // Maybe make the shuffle ammount random, from 7 to 1000
         for (let i = 0; i < 1000; i++)
         {
             let location1 = Math.floor((Math.random() * this.#deck.length));
@@ -42,12 +46,36 @@ class Deck
         this.#createCards();
         this.#shuffleDeck();
 
-        return this.#deck;
+        console.log(this.#deck);
     }
 
     drawCard()
     {
         return this.#deck.pop();
+    }
+
+    shufflePlayedCards(player, dealer)
+    {
+        this.createDeck();
+
+
+        // Remove the cards currently in play from the newly created deck
+        player.hand.forEach(card =>
+        {
+            const indexOfCard = this.#deck.indexOf(card);
+            this.#deck.splice(indexOfCard, 1);
+        });
+
+        dealer.hand.forEach(card =>
+        {
+            const indexOfCard = this.#deck.indexOf(card);
+            this.#deck.splice(indexOfCard, 1);
+        });
+    }
+
+    checkForSplit()
+    {
+        return this.#deck.at(-1) === `split` ? true : false;
     }
 }
 
