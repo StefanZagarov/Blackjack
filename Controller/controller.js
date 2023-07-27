@@ -210,9 +210,9 @@ const controlCheckForNaturals = function ()
 
     if (playerHasNatural && dealerHasNatural)
     {
-        messageView.showMessage(`Stand - off!`);
+        messageView.showMessage(`Stand-off!`);
         controlRevealDealerSecondCard();
-        controlBothNaturalPayment(betAmmount);
+        controlBothNaturalPayment(player, betAmmount);
 
         controlShowBetBtn();
         return;
@@ -294,9 +294,9 @@ const controlPlayerNaturalPayment = function (player, dealer, betAmmount)
     controlCheckForGameOver();
 };
 
-const controlBothNaturalPayment = function (betAmmount)
+const controlBothNaturalPayment = function (player, betAmmount)
 {
-    paymentsModel.bothNaturalPayment(betAmmount);
+    paymentsModel.bothNaturalPayment(player, betAmmount);
 
     fieldView.updateMoney(player);
 };

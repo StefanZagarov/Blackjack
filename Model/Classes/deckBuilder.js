@@ -5,6 +5,7 @@ class Deck
     // Testing purposes
     // #deck = [`A`, 7, `Q`, 5];
     // #deck = [7, `A`, 5, `Q`,];
+    // #deck = [`A`, `A`, `Q`, `Q`,];
 
     constructor()
     {
@@ -47,11 +48,6 @@ class Deck
     drawCard()
     {
         return this.#deck.pop();
-    }
-
-    getRemainingCards()
-    {
-        this.#deck.length;
     }
 }
 

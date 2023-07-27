@@ -1,16 +1,12 @@
-export const bothNaturalPayment = function (betAmmount)
+export const bothNaturalPayment = function (player, betAmmount)
 {
     player.money += betAmmount;
-
-    console.log(`Both natural payment ${betAmmount}`);
 };
 
 export const playerNaturalPayment = function (player, dealer, betAmmount)
 {
     player.money += betAmmount * 2.5;
     dealer.money -= betAmmount * 1.5;
-
-    console.log(`Player natural payment. ${betAmmount}`);
 };
 
 export const giveMoney = function (receiver, giver, betAmmount)
