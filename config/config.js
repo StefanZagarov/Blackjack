@@ -1,2 +1,2 @@
-export const startingCurrencyForPlayer = 5; // 10000
-export const startingCurrencyForDealer = 5; // 5000000
+export const startingCurrencyForPlayer = 10000;
+export const startingCurrencyForDealer = 5000000;
