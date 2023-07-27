@@ -45,8 +45,6 @@ class Deck
     {
         this.#createCards();
         this.#shuffleDeck();
-
-        console.log(this.#deck);
     }
 
     drawCard()

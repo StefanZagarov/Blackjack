@@ -141,7 +141,6 @@ const controlShowBetBtn = function ()
 
 const controlPlayerDraw = function ()
 {
-    console.log(`Remaining deck:`, deck);
     // Useless untill i rewrite it to not create a new deck for each round
     if (deck.checkForSplit())
     {
@@ -160,7 +159,6 @@ const controlPlayerDraw = function ()
 
 const controlDealerDraw = function ()
 {
-    console.log(`Remaining deck:`, deck);
     // Useless untill i rewrite it to not create a new deck for each round
     if (deck.checkForSplit())
     {
