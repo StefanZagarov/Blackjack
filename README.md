@@ -1,3 +1,3 @@
 # Blackjack Application
 
-Blackjack for the browser. Currently under refactoring.
+Blackjack for the browser. Link: https://master--sz-blackjack.netlify.app/
