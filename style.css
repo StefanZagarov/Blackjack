@@ -1,20 +1,17 @@
 @import url('https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap');
 
-*
-{
+* {
   margin: 0;
   padding: 0;
   box-sizing: inherit;
 }
 
-html
-{
+html {
   font-size: 62.5%;
   box-sizing: border-box;
 }
 
-body
-{
+body {
   font-family: 'Press Start 2P', sans-serif;
   color: #eee;
   background-color: #222222;
@@ -22,14 +19,12 @@ body
 }
 
 /* LAYOUT */
-header
-{
+header {
   position: relative;
   height: 35vh;
 }
 
-main
-{
+main {
   height: 65vh;
   color: #eee;
   display: flex;
@@ -37,57 +32,61 @@ main
   justify-content: space-around;
 }
 
-.buttons
-{
-  width: 52rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.buttons {
+  position: absolute;
+  bottom: 25%;
+  left: 45%;
+
+  width: 320px;
+  height: 60px;
 }
 
-.information
-{
+.information {
   width: 52rem;
   font-size: 2rem;
 }
 
-.message
-{
-  transform: translate(-420px, -140px);
-
+.message {
   position: absolute;
-  text-align: center;
+  text-align: left;
 
-  width: 400px;
+  top: 49%;
+  left: 45%;
+
+  width: 100%;
 }
 
-.label-you
-{
-  transform: translate(-310px, 270px);
+.label-you {
+  position: absolute;
+  left: 45%;
+  bottom: 10%;
 }
 
-.label-player-bet
-{
-  transform: translate(-307px, 150px);
+.label-player-bet {
+  position: absolute;
+  left: 45%;
+  bottom: 15%;
 }
 
-.label-dealer
-{
-  transform: translate(-370px, -550px);
+.label-dealer {
+  position: absolute;
+  top: 15%;
+  left: 45%;
 }
 
-.label-dealer-value
-{
-  transform: translate(-370px, -450px);
+.label-dealer-value {
+  position: absolute;
+  top: 25%;
+  left: 45%;
 }
 
-.label-player-value
-{
-  transform: translate(-370px, 30px);
+.label-player-value {
+  position: absolute;
+  left: 45%;
+  bottom: 20%;
 }
 
-h1
-{
+h1 {
   font-size: 4rem;
   text-align: center;
   position: absolute;
@@ -97,16 +96,17 @@ h1
   transform: translate(-50%, -50%);
 }
 
-.dealerCards
-{
+.dealerCards {
   display: flex;
+  position: absolute;
 
-  width: 1500px;
-  transform: translate(300px, 260px);
+  width: 100%;
+
+  left: 5%;
+  top: 100%;
 }
 
-.dealerCardSlot
-{
+.dealerCardSlot {
   background: #eee;
   color: #333;
   font-size: 6rem;
@@ -116,16 +116,16 @@ h1
   margin-right: 20px;
 }
 
-.playerCards
-{
+.playerCards {
   display: flex;
+  position: absolute;
 
-  width: 1500px;
-  transform: translate(300px, 400px);
+  width: 100%;
+  left: 5%;
+  top: 150%;
 }
 
-.playerCardSlot
-{
+.playerCardSlot {
   background: #eee;
   color: #333;
   font-size: 6rem;
@@ -135,8 +135,7 @@ h1
   margin-right: 20px;
 }
 
-.reset
-{
+.reset {
   /* Not following the global rule */
   font-family: 'Press Start 2P', sans-serif;
 
@@ -149,8 +148,7 @@ h1
   left: 2rem;
 }
 
-.hit
-{
+.hit {
   border: none;
   background-color: #eee;
   color: #222;
@@ -159,13 +157,10 @@ h1
   padding: 2rem 4.5rem;
   cursor: pointer;
 
-  transform: translate(380px, 140px);
-
   visibility: hidden;
 }
 
-.stand
-{
+.stand {
   border: none;
   background-color: #eee;
   color: #222;
@@ -174,13 +169,10 @@ h1
   padding: 2rem 3rem;
   cursor: pointer;
 
-  transform: translate(580px, 200px);
-
   visibility: hidden;
 }
 
-.bet
-{
+.bet {
   border: none;
   background-color: #eee;
   color: #222;
@@ -189,11 +181,11 @@ h1
   padding: 2rem 3rem;
   cursor: pointer;
 
-  transform: translate(400px, 80px);
+  position: absolute;
+  left: 0%;
 }
 
-#betField
-{
+#betField {
   font-family: 'Press Start 2P', sans-serif;
 
   height: 40px;
@@ -202,19 +194,19 @@ h1
   font-size: 20px;
   padding-left: 10px;
 
-  transform: translate(550px, 30px);
+  position: absolute;
+  right: 0%;
+  top: 15%;
 }
 
-.btn:hover
-{
+.btn:hover {
   background-color: #ccc;
 }
 
-.version
-{
+.version {
   font-size: 12px;
 
   position: absolute;
-  right: 50px;
-  bottom: 30px;
+  right: 1%;
+  bottom: 1%;
 }
